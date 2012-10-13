@@ -12,6 +12,9 @@ matrix of dimension n is generated and the corresponding graph is drawn on the c
 Place the vertices on the unit circle in the plane, i.e.: vertex k has coordinates (cos(2k*pi/n), sin(2k*pi/n)).
 For every edge as defined by A, draw the line segment between the vertices connected by the edge.
 
+
+https://en.wikipedia.org/wiki/Adjacency_matrix
+
 """
 
 import numpy as np
@@ -33,7 +36,7 @@ import matplotlib.pyplot as plt
 """
 Creates a synmmetric n*n matrix with 0 or 1 as elements
 """
-n=3
+n=10
 
 A=np.zeros((n,n))
 for i in range(n):
@@ -55,14 +58,23 @@ y_f=lambda z: sin((2*z*pi)/n)
 x=[x_f(i)for i in range(n)]
 y=[y_f(i)for i in range(n)]
 
+
+#p1=plt.plot(x,y, linewidth=2.0)
+
+
+# plot lines
+for i in range(n):
+    for j in range(n):
+        if (A[i][j]!=0 and i!=j):
+            x_lin=[x_f(i),x_f(j)]
+            x2=[i,j]
+            #print x2
+            #print x_lin
+            y_lin=[y_f(i),y_f(j)]
+            y2=[i,j]
+            #print y2
+            #print y_lin
+            p=plt.plot(x_lin,y_lin, linewidth=2.0)
 p1=plt.plot(x,y, 'ro')
-p1=plt.plot(x,y, linewidth=2.0)
 plt.show()
 
-### plot lines
-##for i in range(n):
-##    for j in range(n):
-##        if A[i][j]!=0:
-##            x_lin=[x_f(A[i]),x_f(A[j])]
-
-    
