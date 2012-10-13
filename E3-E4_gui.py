@@ -49,15 +49,22 @@ class adjacency():
         self.dim = dimension # dimension of the canvas
         self.c = Canvas(wdw,width=self.dim,\
                         height=self.dim,bg ='white')
-        self.c.grid(row=0,column=0,columnspan=2)
+        self.c.grid(row=0,column=0,columnspan=10)
         
-        # Add button
-        self.b0 = Button(wdw,text='Add Random Matrix'\
+        # Add button to plot graph
+        self.b0 = Button(wdw,text='Plot Graph'\
                          ,command=self.plot_all)
-        self.b0.grid(row=1,column=1)
+        self.b0.grid(row=2,column=3)
         # Entry widget for num points
         self.n = Entry(wdw)
         self.n.grid(row=2,column=1)
+        self.nLbl = Label(wdw,text='Enter the number of vertices:',justify=RIGHT)
+        self.nLbl.grid(row=2,column=0)
+
+        # Add button to animate
+        self.b1 = Button(wdw,text='Trace All Paths',command=self.animate_paths)
+        #self.b1 = Button(wdw,text='Trace All Paths')
+        self.b1.grid(row=3,column=3)
         
 
         # Entry widgets for user to specify specific points
@@ -65,6 +72,10 @@ class adjacency():
         self.i.grid(row=3,column=1)
         self.j = Entry(wdw)
         self.j.grid(row=4,column=1)
+        self.iLbl = Label(wdw,text='Enter a starting point number:',justify=RIGHT)
+        self.jLbl = Label(wdw,text='Enter a end point number:',justify=RIGHT)
+        self.iLbl.grid(row=3,column=0)
+        self.jLbl.grid(row=4,column=0)
 
         
         ## Radius of points
@@ -74,11 +85,11 @@ class adjacency():
         self.center=self.dim/2.
 
 
-    def fun(self):
+    def fun(self,n):
         """
         Functions to calculate the coordinates
         """
-        n=int(self.n.get())
+        
         x_f=lambda z: cos((2.*z*pi)/n)
         y_f=lambda z: sin((2.*z*pi)/n)
         return x_f, y_f
@@ -114,35 +125,25 @@ class adjacency():
         return A
 
 
-    def draw_point(self,x,y,tag=1):
+    def draw_point(self,x,y,tag=1,color='red'):
         """
         Draws a circle centered at x,y with radius =r.
         Tag=1 means label the points with the coordinates
         """
-
-        x_f,y_f=self.fun()
-
-        r=self.radius
-        
-
+        n=int(self.n.get())
+        x_f,y_f=self.fun(n)
+        r=self.radius      
         ## Plot the points
         ## x_c means "x-centered"
         x_c=x_f(x)*self.mag+self.center
         y_c=y_f(x)*self.mag+self.center
-
-
-        self.c.create_oval(x_c-r,y_c-r,x_c+r,y_c+r,outline='red',fill='red',tags='dot')
+        v=self.c.create_oval(x_c-r,y_c-r,x_c+r,y_c+r,outline=color,fill=color,tags='dot')
         self.c.update()
 
         if tag==1:
             tag='Point '+str(x)
             self.label_points(x_c,y_c,tag)
-
-            
-
-            
-
-            
+        return v
         
 
     def plot_coordinates(self):
@@ -154,56 +155,154 @@ class adjacency():
         ## Plot the points
         for i in range(n):
             self.draw_point(i,i)
+            
 
-    def plot_line(self,x0,x1,y0,y1, color=''):
-        """
+    def plot_line(self,x0,x1,y0,y1, color='', width='',arrow=''):
+        """#
         Draws a line between points (x0,y0) and (x1,y1)
         """
-        x_f,y_f=self.fun()
+        n=int(self.n.get())
+        x_f,y_f=self.fun(n)
         X0=x_f(x0)*self.mag+self.center
         X1=x_f(x1)*self.mag+self.center
         Y0=y_f(y0)*self.mag+self.center
         Y1=y_f(y1)*self.mag+self.center
-        if color=='':
-            self.c.create_line(X0,Y0,X1,Y1)
+        # Assign width
+        if width=='':
+            w=1.0
         else:
-            self.c.create_line(X0,Y0,X1,Y1,color)
+            w=width
+        # Assign color
+        if color=='':
+            c='black'
+        else:
+            c=color
+        # Assign arrow
+        if arrow=='':
+            a='none'
+        else:
+            a=arrow
+        t=self.c.create_line(X0,Y0,X1,Y1,fill=c,arrow=a,width=w)
         self.c.update
+        return t
+
+
 
     def plot_edges(self):
         """
         Plot the edges per the adjacency matrix
         """
         n=int(self.n.get())
-        A=self.create_mat()
-        self.A=A
-        print A
+        self.A=self.create_mat()
+        print self.A
         for i in range(n):
             for j in range(n):
-                if (A[i][j]!=0 and i!=j):
+                if (self.A[i][j]!=0 and i!=j):
                     self.plot_line(i,j,i,j)
 
     def plot_all(self):
         """
-        Plots stuff
+        Dletes old stuff, plots new stuff
         """
+        self.c.delete(ALL)
         self.plot_coordinates()
         self.plot_edges()
         self.adj_list()
 
     def adj_list(self):
         """
-        Creates an adjacency list
+        Creates an adjacency list in the form of a dictionary
         """
         #print self.A
-        list=[]
-        for i in range(len(A)):
-            r=[]
-            for j in range(len(A)):
-                print A[i][j]
-                if A[i][j]==1:
-                    r.append(j)
-            list.append(r)
+        graph={}
+        z=len(self.A)
+        for i in range(z):
+            keys=[]
+            #print 'Level: '+str(i)
+            for j in range(z):
+                #print A[i][j]
+                if self.A[i][j]==1:
+                    keys.append(j)
+                #print keys
+            graph[i]=keys
+
+        return graph
+
+    def find_paths(self,adj, start, end, path=[]):
+        """
+        Gets list of all paths given an adjancency list in the form of a dictionary
+        Modified from:
+            --http://www.python.org/doc/essays/graphs.html
+            --http://search.cpan.org/~cavasquez/Paths-Graph-0.02/Graph.pm
+        
+        """
+        # Add the starting point to the path
+        path = path + [start]
+        # If the starting point is the end, then we don't need to do anything
+        if start == end:
+                return [path]
+        # If the adjacency list doesn't have the have starting point, stop
+        if not adj.has_key(start):
+                return []
+        # Define a list paths, to hold the unique paths
+        paths = []
+        # Node represents any point in the adjacency list
+        # Go through each one
+        for node in adj[start]:
+            # If we havent seen this node, repeat the function
+            if node not in path:
+                newpaths = self.find_paths(adj, node, end, path)
+                for newpath in newpaths:
+                    paths.append(newpath)
+        return paths
+
+    def plot_path(self,p,delay):
+        """
+        Plots points given per dictionary
+        """
+        # Each path
+        for i in range(len(p)):
+            #print p[i]
+            # Each entry in the path
+            lines=[]
+            for j in range(len(p[i])):              
+                
+                r=p[i][j]
+                
+                v=self.draw_point(r,r,tag=0,color='blue')
+                
+                # The NEXT entry in the path
+                if j+1 in range(len(p[i])):
+                    r2=p[i][j+1]
+                    #t=self.plot_line(r,r2,r,r2, color='blue')
+                    t=self.plot_line(r,r2,r,r2, color='blue', width='2.0',arrow='last')
+                    lines.append(t)
+                self.c.after(delay)
+                self.draw_point(r,r,tag=0,color='red')
+            for i in range(len(lines)):
+                self.c.delete(lines[i])
+
+
+        
+
+
+
+    def animate_paths(self):
+        """
+        Animates all possible paths
+        """
+        delay = 1500
+        L=self.adj_list()
+        #print L
+        start=int(self.i.get())
+        end=int(self.j.get())
+        p=self.find_paths(L,start,end)
+        #print p
+        self.plot_path(p,delay)
+                
+
+        
+        
             
 
         
