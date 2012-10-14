@@ -42,9 +42,10 @@ class cont_fract():
         self.rep=[]
         
 
-    def __iter__(self):
+    #def __iter__(self):
+        #return
         #self.next()
-        return self.rep
+        #return self.rep
 
     def __str__(self):
         """
@@ -71,6 +72,7 @@ class cont_fract():
         Does one iterations of continued fraction expansion
         """
         from math import floor
+        self.count=self.count+1
         try:
             i=floor(n)
         except TypeError:
@@ -82,10 +84,11 @@ class cont_fract():
         #print f
         #tol=.0001
         #r=1/nsimplify(f, tolerance=tol)
+        
         try:
             r=1/float(f)
             print r
-            self.count=self.count+1
+            
         #print self.count
         except ZeroDivisionError:
             print 'No more expansions'
@@ -97,10 +100,11 @@ class cont_fract():
         try:
             print self.q
             self.q,self.i=self.fract(self.q)
-            print 'i'+str(self.i)
+            print 'i '+str(self.i)
             self.rep.append(self.i)
             #print q
             #print self.count
+            print 'here', self.rep[self.count-1]
             return self.rep[self.count-1]
         except TypeError:
             return
@@ -118,10 +122,10 @@ if __name__=="__main__":
 ##    y=[t.next() for i in range(5)]
 ##    print y
 
-    n2=2.25
-    t2=cont_fract(n2)
-    x=[t2.next() for i in range(4)]
-    print x
+##    n2=2.25
+##    t2=cont_fract(n2)
+##    x=[t2.next() for i in range(4)]
+##    print x
     #print t2.next()
 ##    from math import sqrt
 ##    q=sqrt(2)
