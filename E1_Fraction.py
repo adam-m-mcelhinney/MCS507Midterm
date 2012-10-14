@@ -19,9 +19,15 @@ Notes:
 1. Having issue with rounding. See n=2.45 and wikipedia page
 https://en.wikipedia.org/wiki/Continued_fraction#Calculating_continued_fraction_representations
 
+THINK THIS MAY BE BROKEN!
+
 
 """
 from math import floor
+from sympy import mpmath
+from sympy import nsimplify
+#import sympy as sy
+import fractions
 
 class cont_fract():
     """
@@ -34,7 +40,11 @@ class cont_fract():
         self.count=0
         self.q=self.n
         self.rep=[]
-        self.rep.append(floor(self.n))
+        
+
+    def __iter__(self):
+        #self.next()
+        return self.rep
 
     def __str__(self):
         """
@@ -44,6 +54,7 @@ class cont_fract():
         s=s+'\n Number of evaluations:' + str(self.count)
         s= s+ '\n Latest fractional value: ' + str(self.q)
         s=s+ '\n All functional evaluations: ' + str(self.rep)
+        #s=str(self.rep)
         return s
 
     def __repr__(self):
@@ -64,6 +75,8 @@ class cont_fract():
         #print i
         f=n-i
         #print f
+        tol=.0001
+        #r=1/nsimplify(f, tolerance=tol)    
         r=1/float(f)
         print r
         self.count=self.count+1
@@ -71,15 +84,29 @@ class cont_fract():
         return r
 
     def next(self):
+
+        if self.count==0:
+            self.rep.append(floor(self.n))
+            self.count=self.count+1
+            return self.rep[self.count-1]
+            pass
         
         try:
             print self.q
             self.q=self.fract(self.q)
+            ### Catch infinity from Sympy
+            #if str(type(self.q))=="<class 'sympy.core.numbers.Infinity'>":
+            #    print 'No more expansions'
+            #    return
+            #else:    
             self.rep.append(self.q)
             #print q
             #print self.count
+            return self.rep[self.count-1]
         except ZeroDivisionError:
             print 'No more expansions'
+             
+        
 
             
     
@@ -88,8 +115,17 @@ if __name__=="__main__":
     n=3.245
     t=cont_fract(n)
     #print t
-    print t.next()
+    #print t.next()
+    y=[t.next() for i in range(4)]
+    print y
 
     n2=2.25
     t2=cont_fract(n2)
+    x=[t2.next() for i in range(4)]
+    print x
     #print t2.next()
+    from math import sqrt
+    q=sqrt(2)
+    t3=cont_fract(q)
+    y=[t3.next() for i in range(5)]
+    print y
