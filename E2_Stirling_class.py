@@ -102,6 +102,6 @@ if __name__=="__main__":
     t=Stirling()
     #t.c(5,4)
     t.c(5,5)
-    #print t
+    print t
 
     

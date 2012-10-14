@@ -42,7 +42,7 @@ class adjacency():
     """
     GUI to allow users to create adjacency matrics
     """
-    def __init__(self,wdw,dimension):
+    def __init__(self,wdw,dimension, mag):
         """
         """
         wdw.title("Create Adjacency")
@@ -81,7 +81,7 @@ class adjacency():
         ## Radius of points
         self.radius=4
         ## Scale of points
-        self.mag=300
+        self.mag=mag
         self.center=self.dim/2.
 
 
@@ -312,8 +312,9 @@ class adjacency():
     
 def main():
     top = Tk()      
-    dimension = 800
-    show = adjacency(top,dimension)
+    dimension = 400
+    mag=100
+    show = adjacency(top,dimension, mag)
     top.mainloop()
 
 
