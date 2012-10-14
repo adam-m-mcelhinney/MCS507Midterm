@@ -104,7 +104,7 @@ class cont_fract():
             self.rep.append(self.i)
             #print q
             #print self.count
-            print 'here', self.rep[self.count-1]
+            #print 'here', self.rep[self.count-1]
             return self.rep[self.count-1]
         except TypeError:
             return
@@ -115,18 +115,18 @@ class cont_fract():
     
 if __name__=="__main__":
 
-##    n=3.245
-##    t=cont_fract(n)
-##    #print t
-##    #print t.next()
-##    y=[t.next() for i in range(5)]
-##    print y
+    n=3.245
+    t=cont_fract(n)
+    #print t
+    #print t.next()
+    y=[t.next() for i in range(5)]
+    print y
 
 ##    n2=2.25
 ##    t2=cont_fract(n2)
 ##    x=[t2.next() for i in range(4)]
 ##    print x
-    #print t2.next()
+##    #print t2.next()
 ##    from math import sqrt
 ##    q=sqrt(2)
 ##    t3=cont_fract(q)
